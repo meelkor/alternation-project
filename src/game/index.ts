@@ -1,0 +1,1 @@
+export { GameMap } from './gameMap';
