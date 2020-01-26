@@ -1,10 +1,9 @@
 import { createElement } from 'jsx-dom';
 
-import { ThreeComponent } from '@alt/engine/threeRenderer';
+import { Component, Projector } from '@alt/engine/renderer';
 import { PxPos } from '@alt/engine/projection/tile';
-import { Projector } from '@alt/engine/renderer';
 
-export class ProjectionHelperComponent extends ThreeComponent {
+export class ProjectionHelperComponent extends Component {
     private coordElement = <p id='real'></p>;
     private coordsToProject: PxPos;
 
@@ -28,7 +27,7 @@ export class ProjectionHelperComponent extends ThreeComponent {
             </div>,
         );
 
-        this.eventTarget.addEventListener('mousemove', e => {
+        this.context.eventTarget.addEventListener('mousemove', e => {
             this.coordsToProject = new PxPos(e.x, e.y);
         });
     }

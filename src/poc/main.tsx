@@ -1,18 +1,18 @@
+import { fromEvent } from 'rxjs';
 import { createElement } from 'jsx-dom';
 
 import { Injectable } from '@alt/common';
-import { Renderer, Projector, RenderingConfigProvider } from '@alt/engine/renderer';
+import { RenderingConfigProvider, Renderer, Projector } from '@alt/engine/renderer';
 import { ViewRegistry } from '@alt/engine/view/viewRegistry';
 import { Timer } from '@alt/game/timer';
-import { ThreeRenderer, ThreeProjector } from '@alt/engine/threeRenderer';
 import { ResourceIndex } from '@alt/engine/resources/resourceIndex';
-
 import { Camera } from '@alt/engine/camera';
+
 import { MainView } from './mainView';
-import { fromEvent } from 'rxjs';
+import { CameraControls } from './battlefield/services/cameraControls';
 
 export class PocMain extends Injectable {
-    private renderer: ThreeRenderer;
+    private renderer: Renderer;
     private camera: Camera;
 
     private active = true;
@@ -21,6 +21,7 @@ export class PocMain extends Injectable {
         await this.setup();
         this.setupRenderer();
         this.provide(MainView);
+        this.instantiate(CameraControls);
         this.loop(performance.now());
 
         fromEvent(window, 'blur').subscribe(() => {
@@ -51,8 +52,8 @@ export class PocMain extends Injectable {
 
         this.provide(Timer);
         this.camera = this.provide(Camera);
-        this.provide(ThreeProjector, Projector);
-        this.renderer = this.provide(ThreeRenderer, Renderer);
+        this.provide(Projector);
+        this.renderer = this.provide(Renderer);
     }
 
     private frame(hrt: DOMHighResTimeStamp): void {

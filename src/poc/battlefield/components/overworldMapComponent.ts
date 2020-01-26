@@ -1,18 +1,20 @@
-import { Mesh, PlaneBufferGeometry, BoxBufferGeometry, TextureLoader, AmbientLight, MeshLambertMaterial } from 'three';
-import { fromEvent, merge, empty } from 'rxjs';
-import { tap, switchMap } from 'rxjs/operators';
+import {
+    Mesh,
+    PlaneBufferGeometry,
+    TextureLoader,
+    AmbientLight,
+    MeshLambertMaterial,
+    RepeatWrapping,
+} from 'three';
 
-import { ThreeComponent } from '@alt/engine/threeRenderer';
+import { Component } from '@alt/engine/renderer';
 import { GameMap } from '@alt/game';
-import { PxPos } from '@alt/engine/projection/tile';
-import { Camera } from '@alt/engine/camera';
-import { Projector } from '@alt/engine/renderer';
 
-export class OverworldMapComponent extends ThreeComponent {
+export class OverworldMapComponent extends Component {
     // @ts-ignore
     private map: GameMap;
-    private camera = this.inject(Camera);
-    private projector = this.inject(Projector);
+
+    private CHUNK_SIZE = 32;
 
     private rndrd = false;
 
@@ -20,9 +22,7 @@ export class OverworldMapComponent extends ThreeComponent {
         this.map = map;
     }
 
-    public onBind(): void {
-        this.registerDragPanning();
-    }
+    public onBind(): void { }
 
     public render(): void {
         if (this.rndrd) return;
@@ -30,56 +30,39 @@ export class OverworldMapComponent extends ThreeComponent {
 
         const moon = new AmbientLight('#9999ff', 0.06);
 
-        this.scene.add(moon);
+        this.context.scene.add(moon);
 
-        const CHUNK_SIZE = 30;
-
-        for (let i = 0; i < CHUNK_SIZE ** 2; i++) {
-            this.scene.add(this.makeTile(Math.floor(i / CHUNK_SIZE), i % CHUNK_SIZE, 0));
-        }
+        this.renderChunkGroups();
     }
 
-    private registerDragPanning(): void {
-        let movementBase: PxPos = this.projector.unprojectToCamera(new PxPos(0, 0));
-
-        this.camera.zoom$.subscribe(() => {
-            movementBase = this.projector.unprojectToCamera(new PxPos(0, 0));
-        });
-
-        const mousemove$ = fromEvent<MouseEvent>(this.eventTarget, 'mousemove').pipe(
-            tap(e => this.camera.updateDelta(
-                this.projector
-                    .unprojectToCamera(new PxPos(-e.movementX, -e.movementY))
-                    .sub(movementBase),
-            )),
-        );
-
-        merge(
-            fromEvent<MouseEvent>(this.eventTarget, 'mousedown'),
-            fromEvent<MouseEvent>(this.eventTarget, 'mouseup'),
-        ).pipe(
-            switchMap(e => e.type === 'mousedown' ? mousemove$ : empty()),
-        ).subscribe();
-
-        fromEvent<WheelEvent>(this.eventTarget, 'wheel').subscribe(({ deltaY }) => {
-            this.camera.setZoom(this.camera.zoom * (deltaY > 0 ? 0.9 : 1.1));
-        });
-    }
-
-    private makeTile(x: number, y: number, z: number = 0): Mesh {
+    private renderChunkGroups(): void {
         var grass = new TextureLoader().load('/library/images/grass.webp');
-        const geometry = z ? new BoxBufferGeometry(1, 1, z) : new PlaneBufferGeometry(1, 1, 2, 2);
+        grass.wrapS = RepeatWrapping;
+        grass.wrapT = RepeatWrapping;
+        grass.repeat.set(this.CHUNK_SIZE, this.CHUNK_SIZE);
+
+        const geometry = new PlaneBufferGeometry(
+            this.CHUNK_SIZE,
+            this.CHUNK_SIZE,
+            this.CHUNK_SIZE * 2,
+            this.CHUNK_SIZE * 2,
+        );
         const mesh = new Mesh(
             geometry,
-            new MeshLambertMaterial({
+            [new MeshLambertMaterial({
                 map: grass,
-            }),
+            })],
         );
 
-        mesh.position.x = x + 0.5;
-        mesh.position.y = y + 0.5;
-        mesh.position.z = z / 2;
+        const vertices = (this.CHUNK_SIZE * 2) ** 2 * 6;
 
-        return mesh;
+        geometry.addGroup(0, vertices / 2, 0);
+        geometry.addGroup(vertices / 2, vertices / 2, 0);
+
+        mesh.position.x = this.CHUNK_SIZE / 2;
+        mesh.position.y = this.CHUNK_SIZE / 2;
+        mesh.position.z = 0;
+
+        this.context.scene.add(mesh);
     }
 }

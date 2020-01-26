@@ -2,11 +2,11 @@ import { PlaneGeometry, Mesh, MeshLambertMaterial, SpotLight } from 'three';
 
 import { TilePos } from '@alt/engine/projection/tile';
 import { Sprite } from '@alt/game/piece/sprite';
-import { ThreeComponent, ThreeProjector } from '@alt/engine/threeRenderer';
+import { Component, Projector } from '@alt/engine/renderer';
 import { ResourceIndex } from '@alt/engine/resources/resourceIndex';
-import { SpriteTexture } from '@alt/engine/threeRenderer/spriteTexture';
+import { SpriteTexture } from '@alt/engine/renderer/spriteTexture';
 
-export class SpriteComponent extends ThreeComponent {
+export class SpriteComponent extends Component {
     private sprite: Sprite;
 
     private renderedPosition: TilePos;
@@ -17,7 +17,7 @@ export class SpriteComponent extends ThreeComponent {
     private light: SpotLight;
 
     private resourceIndex = this.inject(ResourceIndex);
-    private projector = this.inject(ThreeProjector);
+    private projector = this.inject(Projector);
     private z: number = 0;
     private x: number = 0;
 
@@ -67,7 +67,7 @@ export class SpriteComponent extends ThreeComponent {
                 material,
             );
 
-            this.scene.add(this.mesh);
+            this.context.scene.add(this.mesh);
         }
 
         if (!this.light && this.sprite.light > 0) {
@@ -76,8 +76,8 @@ export class SpriteComponent extends ThreeComponent {
             this.light.angle = 0.45;
             this.light.penumbra = 1;
             this.light.target.position.set(this.sprite.position.x, this.sprite.position.y, 0);
-            this.scene.add(this.light);
-            this.scene.add(this.light.target);
+            this.context.scene.add(this.light);
+            this.context.scene.add(this.light.target);
         }
 
         if (this.light) {
