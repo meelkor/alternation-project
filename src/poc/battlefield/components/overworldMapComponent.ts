@@ -28,7 +28,7 @@ export class OverworldMapComponent extends ThreeComponent {
         if (this.rndrd) return;
         this.rndrd = true;
 
-        const moon = new AmbientLight('#6666ff', 0.04);
+        const moon = new AmbientLight('#9999ff', 0.06);
 
         this.scene.add(moon);
 

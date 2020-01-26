@@ -2,8 +2,8 @@ import { View } from '@alt/engine/view';
 import { GameMap } from '@alt/game';
 
 import { OverworldMapComponent } from './components/overworldMapComponent';
-import { PieceComponent } from './components/pieceComponent';
-import { Piece } from '@alt/game/piece/piece';
+import { SpriteComponent } from './components/spriteComponent';
+import { Sprite } from '@alt/game/piece/sprite';
 import { TilePos } from '@alt/engine/projection/tile';
 
 export class OverworldView extends View {
@@ -33,14 +33,14 @@ export class OverworldView extends View {
     }
 
     private makePiece(pos: TilePos, light: number): void {
-        const piece = new Piece();
+        const piece = new Sprite();
 
         piece.asset = 'bitch';
         piece.state = 'idle';
         piece.light = light;
         piece.position = pos.add({ x: 0.5, y: 0.5 });
 
-        const pieceComponent = this.instantiate(PieceComponent);
+        const pieceComponent = this.instantiate(SpriteComponent);
         pieceComponent.setPiece(piece);
         this.bindComponent(pieceComponent);
     }

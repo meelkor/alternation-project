@@ -2,7 +2,7 @@ import { UVMapping, ClampToEdgeWrapping, NearestFilter, CanvasTexture, Texture }
 
 import { ResourceInfo } from '../resources/resourceIndex';
 
-export class ThreeSprite {
+export class SpriteTexture {
     public readonly texture: CanvasTexture;
 
     // @ts-ignore
@@ -46,7 +46,7 @@ export class ThreeSprite {
     /**
      * Create new Texture instance for this sprite.
      */
-    public clone(): ThreeSprite {
-        return new ThreeSprite(this.resInfo);
+    public clone(): SpriteTexture {
+        return new SpriteTexture(this.resInfo);
     }
 }

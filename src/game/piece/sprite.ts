@@ -1,6 +1,6 @@
 import { TilePos } from '@alt/engine/projection/tile';
 
-export class Piece {
+export class Sprite {
     public asset: string;
     public state: string;
     public position: TilePos;

@@ -1,18 +1,18 @@
 import { PlaneGeometry, Mesh, MeshLambertMaterial, SpotLight } from 'three';
 
 import { TilePos } from '@alt/engine/projection/tile';
-import { Piece } from '@alt/game/piece/piece';
+import { Sprite } from '@alt/game/piece/sprite';
 import { ThreeComponent, ThreeProjector } from '@alt/engine/threeRenderer';
 import { ResourceIndex } from '@alt/engine/resources/resourceIndex';
-import { ThreeSprite } from '@alt/engine/threeRenderer/threeSprite';
+import { SpriteTexture } from '@alt/engine/threeRenderer/spriteTexture';
 
-export class PieceComponent extends ThreeComponent {
-    private piece: Piece;
+export class SpriteComponent extends ThreeComponent {
+    private sprite: Sprite;
 
     private renderedPosition: TilePos;
     private renderedSprite: RenderedSprite;
 
-    private sprite: ThreeSprite;
+    private spriteTexture: SpriteTexture;
     private mesh: Mesh;
     private light: SpotLight;
 
@@ -21,11 +21,11 @@ export class PieceComponent extends ThreeComponent {
     private z: number = 0;
     private x: number = 0;
 
-    public setPiece(piece: Piece): void {
-        this.piece = piece;
+    public setPiece(piece: Sprite): void {
+        this.sprite = piece;
 
-        if (!this.resourceIndex.getResource(this.piece.asset)) {
-            throw new Error(`Asset doesn't exist: ${this.piece.asset}`);
+        if (!this.resourceIndex.getResource(this.sprite.asset)) {
+            throw new Error(`Asset doesn't exist: ${this.sprite.asset}`);
         }
     }
 
@@ -35,20 +35,20 @@ export class PieceComponent extends ThreeComponent {
         if (
             this.renderedSprite
             && this.renderedPosition
-            && this.renderedPosition.eq(this.piece.position)
-            && this.renderedSprite.state === this.piece.state
+            && this.renderedPosition.eq(this.sprite.position)
+            && this.renderedSprite.state === this.sprite.state
         ) {
             return;
         }
 
-        if (!this.sprite) {
-            this.sprite = new ThreeSprite(this.resourceIndex.getResource(this.piece.asset));
+        if (!this.spriteTexture) {
+            this.spriteTexture = new SpriteTexture(this.resourceIndex.getResource(this.sprite.asset));
         }
 
         if (!this.mesh) {
-            const dimensions = this.projector.unprojectDimensions(this.sprite);
+            const dimensions = this.projector.unprojectDimensions(this.spriteTexture);
             const material = new MeshLambertMaterial({
-                map: this.sprite.getTexture(),
+                map: this.spriteTexture.getTexture(),
             });
             const geometry = new PlaneGeometry(
                 dimensions.width,
@@ -70,20 +70,20 @@ export class PieceComponent extends ThreeComponent {
             this.scene.add(this.mesh);
         }
 
-        if (!this.light && this.piece.light > 0) {
-            this.light = new SpotLight('#ffccaa', this.piece.light);
+        if (!this.light && this.sprite.light > 0) {
+            this.light = new SpotLight('#ffccaa', this.sprite.light);
             this.light.distance = 100;
             this.light.angle = 0.45;
             this.light.penumbra = 1;
-            this.light.target.position.set(this.piece.position.x, this.piece.position.y, 0);
+            this.light.target.position.set(this.sprite.position.x, this.sprite.position.y, 0);
             this.scene.add(this.light);
             this.scene.add(this.light.target);
         }
 
         if (this.light) {
-            this.light.position.set(this.piece.position.x, this.piece.position.y, 10);
+            this.light.position.set(this.sprite.position.x, this.sprite.position.y, 10);
         }
-        this.mesh.position.set(this.piece.position.x + this.x, this.piece.position.y + this.x, this.z);
+        this.mesh.position.set(this.sprite.position.x + this.x, this.sprite.position.y + this.x, this.z);
     }
 }
 
