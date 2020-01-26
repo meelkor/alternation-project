@@ -1,0 +1,9 @@
+{
+    "resources": [
+        {
+            "name": "bitch",
+            "path": "./images/bitch.webp",
+            "states": ["idle"]
+        }
+    ]
+}

@@ -1,56 +1,54 @@
 import { createElement } from 'jsx-dom';
 
 import { Injectable } from '@alt/common';
-import { Renderer } from '@alt/engine/renderer';
-import { GameMap } from '@alt/game';
+import { Renderer, Projector, RenderingConfigProvider } from '@alt/engine/renderer';
 import { ViewRegistry } from '@alt/engine/view/viewRegistry';
-import { RendererConfig } from '@alt/engine/renderer/rendererConfig';
-import { GameMapTile } from '@alt/game/gameMap';
 import { Timer } from '@alt/game/timer';
-import { ThreeRenderer } from '@alt/engine/threeRenderer';
-import { TileProjector } from '@alt/engine/projection';
-import { DiagonalTileProjector } from '@alt/engine/diagonalProjection';
+import { ThreeRenderer, ThreeProjector } from '@alt/engine/threeRenderer';
+import { ResourceIndex } from '@alt/engine/resources/resourceIndex';
 
-import { BattlefieldView } from './battlefield/battlefieldView';
+import { Camera } from '@alt/engine/camera';
+import { MainView } from './mainView';
 
 export class PocMain extends Injectable {
     private renderer: ThreeRenderer;
+    private camera: Camera;
 
-    constructor() {
-        super();
-
-        this.provide(ViewRegistry);
-
-        this.provide(Timer);
-        this.provide(RendererConfig);
-        this.renderer = this.provide(ThreeRenderer, Renderer);
-        this.provide(DiagonalTileProjector, TileProjector);
+    public async runGameExample() {
+        await this.setup();
+        this.setupRenderer();
+        this.provide(MainView);
+        this.loop(performance.now());
     }
 
-    public runGameExample() {
-        this.setupRenderer();
+    private loop(hrt: DOMHighResTimeStamp): void {
+        window.requestAnimationFrame(this.loop.bind(this));
+        this.frame(hrt);
+    }
 
-        const battlefield = this.provide(BattlefieldView);
+    private async setup() {
+        this.provide(ViewRegistry);
+        this.provide(RenderingConfigProvider).update({
+            width: window.innerWidth,
+            height: window.innerHeight,
+            tileSize: 128,
+        });
+        await this.provide(ResourceIndex).init('/library/index.json');
 
-        battlefield.init(new GameMap([
-            new GameMapTile(0, 0, 'grass'),
-            new GameMapTile(0, 1, 'grass'),
-            new GameMapTile(1, 0, 'water'),
-            new GameMapTile(1, 1, 'water'),
-            new GameMapTile(2, 0, 'dirt'),
-            new GameMapTile(2, 1, 'dirt'),
-            new GameMapTile(2, 2, 'dirt'),
-            new GameMapTile(2, 3, 'dirt'),
-        ]));
+        this.provide(Timer);
+        this.camera = this.provide(Camera);
+        this.provide(ThreeProjector, Projector);
+        this.renderer = this.provide(ThreeRenderer, Renderer);
+    }
+
+    private frame(hrt: DOMHighResTimeStamp): void {
+        this.camera.update();
+        this.renderer.render(hrt);
     }
 
     private setupRenderer(): void {
         const canvas = (<canvas></canvas>) as HTMLCanvasElement;
         document.body.append(canvas);
-        this.renderer.setCanvas(
-            canvas,
-            window.innerWidth,
-            window.innerHeight,
-        );
+        this.renderer.setCanvas(canvas);
     }
 }

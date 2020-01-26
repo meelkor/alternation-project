@@ -1,12 +1,8 @@
-import { ReplaySubject } from 'rxjs';
-
 import { Injectable } from '@alt/common';
 import { Pos } from '@alt/common/geometry/pos';
 import { Component } from './component';
 
 export abstract class Renderer<T extends Component> extends Injectable {
-    public viewport$ = new ReplaySubject<ViewportSize>(1);
-
     protected components: BoundComponent<T>[] = [];
 
     public bind(component: T, pane: number): void {
@@ -14,10 +10,13 @@ export abstract class Renderer<T extends Component> extends Injectable {
         this.components.push(boundComp);
         this.registerComponent(boundComp);
         component.onBind();
-        this.renderComponent(boundComp);
     }
 
-    public renderComponent(_component: BoundComponent<T>): void { }
+    public render(hrt: DOMHighResTimeStamp): void {
+        for (const boundComponent of this.components) {
+            boundComponent.component.render(hrt);
+        }
+    }
 
     public registerComponent(_bound: BoundComponent<T>): void { }
 }

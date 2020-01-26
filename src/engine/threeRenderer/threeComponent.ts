@@ -1,10 +1,14 @@
-import { Observable } from 'rxjs';
-
 import { Component } from '../renderer';
-import { Scene } from 'three';
+import { Scene, Camera } from 'three';
 
 export abstract class ThreeComponent extends Component {
-    public abstract rerender$: Observable<null>;
+    protected scene: Scene;
+    protected eventTarget: HTMLCanvasElement;
+    protected threeCamera: Camera;
 
-    public scene: Scene;
+    public setRenderingContext(scene: Scene, eventTarget: HTMLCanvasElement, threeCamera: Camera) {
+        this.scene = scene;
+        this.eventTarget = eventTarget;
+        this.threeCamera = threeCamera;
+    }
 }

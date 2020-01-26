@@ -5,11 +5,11 @@ export function pickPos<T extends Pos>(x: T, y: T): T {
 export abstract class Pos {
     constructor(public x: number, public y: number) { }
 
-    public add(pos: Pos): this {
+    public add(pos: PosInput): this {
         return new (this.constructor as PosLike<this>)(this.x + pos.x, this.y + pos.y);
     }
 
-    public sub(pos: Pos): this {
+    public sub(pos: PosInput): this {
         return new (this.constructor as PosLike<this>)(this.x - pos.x, this.y - pos.y);
     }
 
@@ -29,9 +29,15 @@ export abstract class Pos {
         return new (this.constructor as PosLike<this>)(Math.floor(this.x), Math.floor(this.y));
     }
 
+    public eq(pos: PosInput): boolean {
+        return this.x === pos.x && this.y === pos.y;
+    }
+
     public toString(): string {
         return `${this.x}, ${this.y}`;
     }
 }
 
 type PosLike<T> = new (x: number, y: number) => T;
+
+type PosInput = { x: number; y: number };
