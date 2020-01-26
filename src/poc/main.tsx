@@ -9,21 +9,35 @@ import { ResourceIndex } from '@alt/engine/resources/resourceIndex';
 
 import { Camera } from '@alt/engine/camera';
 import { MainView } from './mainView';
+import { fromEvent } from 'rxjs';
 
 export class PocMain extends Injectable {
     private renderer: ThreeRenderer;
     private camera: Camera;
+
+    private active = true;
 
     public async runGameExample() {
         await this.setup();
         this.setupRenderer();
         this.provide(MainView);
         this.loop(performance.now());
+
+        fromEvent(window, 'blur').subscribe(() => {
+            this.active = false;
+        });
+        fromEvent(window, 'focus').subscribe(() => {
+            if (!this.active) {
+                this.active = true;
+            }
+        });
     }
 
     private loop(hrt: DOMHighResTimeStamp): void {
         window.requestAnimationFrame(this.loop.bind(this));
-        this.frame(hrt);
+        if (this.active) {
+            this.frame(hrt);
+        }
     }
 
     private async setup() {
