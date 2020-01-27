@@ -6,20 +6,22 @@ import { RenderingConfigProvider, Renderer, Projector } from '@alt/engine/render
 import { ViewRegistry } from '@alt/engine/view/viewRegistry';
 import { Timer } from '@alt/game/timer';
 import { ResourceIndex } from '@alt/engine/resources/resourceIndex';
-import { Camera } from '@alt/engine/camera';
+import { WorldCamera } from '@alt/engine/camera';
 
 import { MainView } from './mainView';
 import { CameraControls } from './battlefield/services/cameraControls';
+import { EventHandler } from '@alt/engine/events';
 
 export class PocMain extends Injectable {
     private renderer: Renderer;
-    private camera: Camera;
+    private camera: WorldCamera;
 
     private active = true;
 
     public async runGameExample() {
         await this.setup();
         this.setupRenderer();
+        this.provide(EventHandler);
         this.provide(MainView);
         this.instantiate(CameraControls);
         this.loop(performance.now());
@@ -51,7 +53,7 @@ export class PocMain extends Injectable {
         await this.provide(ResourceIndex).init('/library/index.json');
 
         this.provide(Timer);
-        this.camera = this.provide(Camera);
+        this.camera = this.provide(WorldCamera);
         this.provide(Projector);
         this.renderer = this.provide(Renderer);
     }

@@ -24,8 +24,13 @@ export class ResourceIndex extends Injectable {
                     image.src = join(base, res.path);
                 });
 
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                canvas.getContext('2d').drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+
                 this.index.set(res.name, {
-                    img,
+                    img: canvas,
                     states: res.states,
                 });
             }),
@@ -38,6 +43,6 @@ export class ResourceIndex extends Injectable {
 }
 
 export interface ResourceInfo {
-    img: HTMLImageElement;
+    img: HTMLCanvasElement;
     states: string[];
 }

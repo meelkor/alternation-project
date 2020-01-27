@@ -6,7 +6,7 @@ import { Injector, Injectable } from '@alt/common';
 import { RenderingConfig, RenderingConfigProvider } from '.';
 import { PxPos, TilePos } from '../projection/tile';
 import { Dimensions } from '../projection/geometry';
-import { Camera } from '../camera';
+import { WorldCamera } from '../camera';
 
 export class Projector extends Injectable {
     private virtualTileWidth: number;
@@ -16,7 +16,7 @@ export class Projector extends Injectable {
     private virtualWidthHalf: number;
     private height: number;
 
-    private camera = this.inject(Camera);
+    private camera = this.inject(WorldCamera);
     private renderingConfigProvider = this.inject(RenderingConfigProvider);
 
     constructor(parent: Injector) {

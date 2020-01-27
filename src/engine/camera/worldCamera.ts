@@ -5,7 +5,7 @@ import { Injectable, Injector } from '@alt/common';
 import { TilePos } from '../projection/tile';
 
 
-export class Camera extends Injectable {
+export class WorldCamera extends Injectable {
     public position$: Subject<TilePos>;
     public zoom$: Subject<number>;
     public delta$: Subject<TilePos>;

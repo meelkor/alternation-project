@@ -21,8 +21,8 @@ export class SpriteTexture {
     }
 
     constructor(private resInfo: ResourceInfo) {
-        this.mapWidth = resInfo.img.naturalWidth;
-        this.mapHeight = resInfo.img.naturalHeight;
+        this.mapWidth = resInfo.img.width;
+        this.mapHeight = resInfo.img.height;
         this.states = resInfo.states;
 
         this.texture = new CanvasTexture(

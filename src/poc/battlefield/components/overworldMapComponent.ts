@@ -28,6 +28,7 @@ export class OverworldMapComponent extends Component {
         if (this.rndrd) return;
         this.rndrd = true;
 
+        // const moon = new AmbientLight('#ffffff', 1);
         const moon = new AmbientLight('#9999ff', 0.06);
 
         this.context.scene.add(moon);
@@ -47,12 +48,14 @@ export class OverworldMapComponent extends Component {
             this.CHUNK_SIZE * 2,
             this.CHUNK_SIZE * 2,
         );
+
         const mesh = new Mesh(
             geometry,
             [new MeshLambertMaterial({
                 map: grass,
             })],
         );
+        mesh.userData.role = 'rol';
 
         const vertices = (this.CHUNK_SIZE * 2) ** 2 * 6;
 

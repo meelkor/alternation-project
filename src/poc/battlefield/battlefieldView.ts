@@ -3,18 +3,20 @@ import { GameMap } from '@alt/game';
 
 import { Sprite } from '@alt/game/piece/sprite';
 import { TilePos } from '@alt/engine/projection/tile';
+import { EventHandler } from '@alt/engine/events';
 
 import { OverworldMapComponent } from './components/overworldMapComponent';
 import { SpriteComponent } from './components/spriteComponent';
 
 export class OverworldView extends View {
+    private eventHandler = this.inject(EventHandler);
+
     public async createOverworld(map: GameMap): Promise<void> {
         const mapComponent = this.provide(OverworldMapComponent);
         mapComponent.setMap(map);
         this.bindComponent(mapComponent);
 
-
-        this.makePiece(new TilePos(10, 10), 1);
+        this.makePiece(new TilePos(2, 32), 1);
         this.makePiece(new TilePos(10 - 3 - 1, 10 - 4), 1);
         this.makePiece(new TilePos(10 - 3, 10 - 3), 1);
         this.makePiece(new TilePos(10 - 2, 10 - 2), 1);
@@ -25,7 +27,11 @@ export class OverworldView extends View {
         this.makePiece(new TilePos(1 + 10 - 2, 10 - 2), 1);
         this.makePiece(new TilePos(1 + 10 - 1, 10 - 1), 1);
         this.makePiece(new TilePos(1 + 10 + 3 + 1, 10 + 4), 1);
-        this.makePiece(new TilePos(21, 21), 1);
+        this.makePiece(new TilePos(2, 2), 1);
+
+        this.eventHandler.click$.subscribe(({ tile }) => {
+
+        });
     }
 
     private makePiece(pos: TilePos, light: number): void {

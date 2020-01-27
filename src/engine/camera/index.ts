@@ -1,1 +1,1 @@
-export { Camera } from './camera';
+export { WorldCamera } from './worldCamera';

@@ -3,7 +3,7 @@ import { tap, switchMap } from 'rxjs/operators';
 
 import { Injectable, Injector } from '@alt/common';
 import { Projector, Renderer } from '@alt/engine/renderer';
-import { Camera } from '@alt/engine/camera';
+import { WorldCamera } from '@alt/engine/camera';
 import { PxPos } from '@alt/engine/projection/tile';
 
 export class CameraControls extends Injectable {
@@ -12,7 +12,7 @@ export class CameraControls extends Injectable {
 
         const projector = this.inject(Projector);
         const renderer = this.inject(Renderer);
-        const camera = this.inject(Camera);
+        const camera = this.inject(WorldCamera);
 
         let movementBase: PxPos = projector.unprojectToCamera(new PxPos(0, 0));
 

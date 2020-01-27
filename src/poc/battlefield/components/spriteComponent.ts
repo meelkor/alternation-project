@@ -66,6 +66,7 @@ export class SpriteComponent extends Component {
                 geometry,
                 material,
             );
+            this.mesh.userData.role = 'sprite';
 
             this.context.scene.add(this.mesh);
         }

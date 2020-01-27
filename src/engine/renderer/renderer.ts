@@ -3,10 +3,10 @@ import { Injectable } from '@alt/common';
 
 import { RenderingConfigProvider, RenderingConfig } from '.';
 import { Component } from './component';
-import { Camera } from '../camera';
+import { WorldCamera } from '../camera';
 
 export class Renderer extends Injectable {
-    private camera = this.inject(Camera);
+    private worldCamera = this.inject(WorldCamera);
     private renderingConfig = this.inject(RenderingConfigProvider);
 
     private canvas: HTMLCanvasElement;
@@ -14,12 +14,20 @@ export class Renderer extends Injectable {
     private renderer: WebGLRenderer;
     private threeCamera: OrthographicCamera;
 
-    private worldScene: Scene;
+    private _worldScene: Scene;
 
     private components: BoundComponent[] = [];
 
     public get eventTarget(): HTMLCanvasElement {
         return this.canvas;
+    }
+
+    public get camera(): OrthographicCamera {
+        return this.threeCamera;
+    }
+
+    public get worldScene(): Scene {
+        return this._worldScene;
     }
 
     public bind(component: Component, pane: number): void {
@@ -78,13 +86,13 @@ export class Renderer extends Injectable {
         this.threeCamera.position.y = -baseOffset;
         this.threeCamera.position.x = -baseOffset;
 
-        this.worldScene = new Scene();
+        this._worldScene = new Scene();
 
-        this.camera.position$.subscribe(pos => {
+        this.worldCamera.position$.subscribe(pos => {
             this.threeCamera.position.x = pos.x - baseOffset;
             this.threeCamera.position.y = pos.y - baseOffset;
         });
-        this.camera.zoom$.subscribe(z => {
+        this.worldCamera.zoom$.subscribe(z => {
             this.threeCamera.zoom = z;
             this.threeCamera.updateProjectionMatrix();
         });
