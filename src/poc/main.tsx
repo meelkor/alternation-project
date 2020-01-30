@@ -2,19 +2,18 @@ import { fromEvent } from 'rxjs';
 import { createElement } from 'jsx-dom';
 
 import { Injectable } from '@alt/common';
-import { RenderingConfigProvider, Renderer, Projector } from '@alt/engine/renderer';
-import { ViewRegistry } from '@alt/engine/view/viewRegistry';
+import { RenderingConfigProvider, Renderer } from '@alt/engine/renderer';
 import { Timer } from '@alt/game/timer';
 import { ResourceIndex } from '@alt/engine/resources/resourceIndex';
-import { WorldCamera } from '@alt/engine/camera';
-
-import { MainView } from './mainView';
-import { CameraControls } from './battlefield/services/cameraControls';
+import { GameMap } from '@alt/game';
 import { EventHandler } from '@alt/engine/events';
+import { Store } from '@alt/engine/store';
+
+import { OverworldView } from './battlefield/overworldView';
+import { PocStore } from './pocStore';
 
 export class PocMain extends Injectable {
     private renderer: Renderer;
-    private camera: WorldCamera;
 
     private active = true;
 
@@ -22,9 +21,10 @@ export class PocMain extends Injectable {
         await this.setup();
         this.setupRenderer();
         this.provide(EventHandler);
-        this.provide(MainView);
-        this.instantiate(CameraControls);
+        this.provide(PocStore, Store);
         this.loop(performance.now());
+
+        this.createOverworld();
 
         fromEvent(window, 'blur').subscribe(() => {
             this.active = false;
@@ -36,6 +36,10 @@ export class PocMain extends Injectable {
         });
     }
 
+    private createOverworld() {
+        this.provide(OverworldView).createOverworld(new GameMap([]));
+    }
+
     private loop(hrt: DOMHighResTimeStamp): void {
         window.requestAnimationFrame(this.loop.bind(this));
         if (this.active) {
@@ -44,7 +48,6 @@ export class PocMain extends Injectable {
     }
 
     private async setup() {
-        this.provide(ViewRegistry);
         this.provide(RenderingConfigProvider).update({
             width: window.innerWidth,
             height: window.innerHeight,
@@ -53,13 +56,10 @@ export class PocMain extends Injectable {
         await this.provide(ResourceIndex).init('/library/index.json');
 
         this.provide(Timer);
-        this.camera = this.provide(WorldCamera);
-        this.provide(Projector);
         this.renderer = this.provide(Renderer);
     }
 
     private frame(hrt: DOMHighResTimeStamp): void {
-        this.camera.update();
         this.renderer.render(hrt);
     }
 

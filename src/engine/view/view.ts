@@ -1,14 +1,53 @@
-import { Injectable } from '@alt/common';
+import { Injectable, Injector } from '@alt/common';
 import { Renderer, Component } from '../renderer';
-import { ViewRegistry } from './viewRegistry';
+import { Reaction } from './reaction';
+import { Store } from '../store';
 
 export abstract class View extends Injectable {
-    protected viewRegistry = this.inject(ViewRegistry);
     protected renderer = this.inject(Renderer);
 
-    public pane = this.viewRegistry.topPane++;
+    protected store: Store;
+
+    private reactions: Reaction[] = [];
+
+    constructor(parent: Injector) {
+        super(parent);
+
+        this.renderer.registerView(this);
+    }
+
+    public update(hrt: number): void {
+        this.onUpdate(hrt);
+
+        if (this.store) {
+            const events = [...this.store.events];
+            this.store.events.clear();
+
+            this.reactions = this.reactions.filter(reaction => {
+                const payloads = events
+                    .filter(ev => reaction.events.has(ev[0]))
+                    .map(ev => ev[1]);
+
+                if (payloads) {
+                    return reaction.react(payloads.flat());
+                } else {
+                    return true;
+                }
+            });
+        }
+    }
+
+    protected abstract onUpdate(hrt: number): void;
+
+    protected react(): Reaction {
+        const reaction = new Reaction();
+
+        this.reactions.push(reaction);
+
+        return reaction;
+    }
 
     protected bindComponent(comp: Component) {
-        this.renderer.bind(comp, this.pane);
+        this.renderer.bindComponent(comp, this.pane);
     }
 }

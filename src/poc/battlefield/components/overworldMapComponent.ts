@@ -33,10 +33,15 @@ export class OverworldMapComponent extends Component {
 
         this.context.scene.add(moon);
 
-        this.renderChunkGroups();
+        this.renderChunkGroups({ x: 0, y: 0 });
+        this.renderChunkGroups({ x: -1 * this.CHUNK_SIZE, y: -1 * this.CHUNK_SIZE });
+        this.renderChunkGroups({ x: -2 * this.CHUNK_SIZE, y: -2 * this.CHUNK_SIZE });
+        this.renderChunkGroups({ x: -3 * this.CHUNK_SIZE, y: -3 * this.CHUNK_SIZE });
+        this.renderChunkGroups({ x: -4 * this.CHUNK_SIZE, y: -4 * this.CHUNK_SIZE });
+        this.renderChunkGroups({ x: -5 * this.CHUNK_SIZE, y: -5 * this.CHUNK_SIZE });
     }
 
-    private renderChunkGroups(): void {
+    private renderChunkGroups(chunk: MapChunk): void {
         var grass = new TextureLoader().load('/library/images/grass.webp');
         grass.wrapS = RepeatWrapping;
         grass.wrapT = RepeatWrapping;
@@ -49,23 +54,30 @@ export class OverworldMapComponent extends Component {
             this.CHUNK_SIZE * 2,
         );
 
+        const material = new MeshLambertMaterial({
+            map: grass,
+        });
+
         const mesh = new Mesh(
             geometry,
-            [new MeshLambertMaterial({
-                map: grass,
-            })],
+            [material],
         );
-        mesh.userData.role = 'rol';
+        mesh.userData.terrain = true;
 
         const vertices = (this.CHUNK_SIZE * 2) ** 2 * 6;
 
         geometry.addGroup(0, vertices / 2, 0);
         geometry.addGroup(vertices / 2, vertices / 2, 0);
 
-        mesh.position.x = this.CHUNK_SIZE / 2;
-        mesh.position.y = this.CHUNK_SIZE / 2;
+        mesh.position.x = chunk.x + this.CHUNK_SIZE / 2;
+        mesh.position.y = chunk.y + this.CHUNK_SIZE / 2;
         mesh.position.z = 0;
 
         this.context.scene.add(mesh);
     }
+}
+
+interface MapChunk {
+    x: number;
+    y: number;
 }

@@ -1,12 +1,12 @@
 import { WebGLRenderer, OrthographicCamera, Scene, ShaderChunk } from 'three';
 import { Injectable } from '@alt/common';
+import { DEBUG } from '@alt/common/env';
 
 import { RenderingConfigProvider, RenderingConfig } from '.';
 import { Component } from './component';
-import { WorldCamera } from '../camera';
+import { View } from '../view';
 
 export class Renderer extends Injectable {
-    private worldCamera = this.inject(WorldCamera);
     private renderingConfig = this.inject(RenderingConfigProvider);
 
     private canvas: HTMLCanvasElement;
@@ -17,6 +17,7 @@ export class Renderer extends Injectable {
     private _worldScene: Scene;
 
     private components: BoundComponent[] = [];
+    private views: View[] = [];
 
     public get eventTarget(): HTMLCanvasElement {
         return this.canvas;
@@ -30,12 +31,17 @@ export class Renderer extends Injectable {
         return this._worldScene;
     }
 
-    public bind(component: Component, pane: number): void {
+    public bindComponent(component: Component, pane: number): void {
         const boundComp = { pane, component };
         this.components.push(boundComp);
         this.registerComponent(boundComp);
         component.onBind();
     }
+
+    public registerView(view: View) {
+        this.views.push(view);
+    }
+
 
     public registerComponent({ component }: BoundComponent) {
         component.setRenderingContext({
@@ -51,6 +57,10 @@ export class Renderer extends Injectable {
     }
 
     public render(hrt: DOMHighResTimeStamp): void {
+        for (const view of this.views) {
+            view.update(hrt);
+        }
+
         for (const boundComponent of this.components) {
             boundComponent.component.render(hrt);
         }
@@ -68,6 +78,11 @@ export class Renderer extends Injectable {
             canvas: this.canvas,
             antialias: false,
         });
+        if (!DEBUG) {
+            this.renderer.debug = {
+                checkShaderErrors: false,
+            };
+        }
 
         const frustum = this.calculateFrustum(startingConfig);
 
@@ -87,15 +102,6 @@ export class Renderer extends Injectable {
         this.threeCamera.position.x = -baseOffset;
 
         this._worldScene = new Scene();
-
-        this.worldCamera.position$.subscribe(pos => {
-            this.threeCamera.position.x = pos.x - baseOffset;
-            this.threeCamera.position.y = pos.y - baseOffset;
-        });
-        this.worldCamera.zoom$.subscribe(z => {
-            this.threeCamera.zoom = z;
-            this.threeCamera.updateProjectionMatrix();
-        });
 
         this.preventLambertOverlit();
     }
