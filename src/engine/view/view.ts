@@ -48,6 +48,6 @@ export abstract class View extends Injectable {
     }
 
     protected bindComponent(comp: Component) {
-        this.renderer.bindComponent(comp, this.pane);
+        this.renderer.bindComponent(comp);
     }
 }

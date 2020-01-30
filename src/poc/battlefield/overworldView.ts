@@ -1,5 +1,4 @@
 import { View } from '@alt/engine/view';
-import { GameMap } from '@alt/game';
 import { EventHandler } from '@alt/engine/events';
 import { CharacterSprite } from '@alt/game/character/characterSprite';
 import { Character } from '@alt/game/character';
@@ -48,9 +47,8 @@ export class OverworldView extends View {
         }
     }
 
-    public async createOverworld(map: GameMap): Promise<void> {
+    public async createOverworld(): Promise<void> {
         const mapComponent = this.provide(OverworldMapComponent);
-        mapComponent.setMap(map);
         this.bindComponent(mapComponent);
 
         this.react().to(PocStoreEvents.AddCharacter)

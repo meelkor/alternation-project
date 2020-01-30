@@ -1,26 +1,20 @@
 import {
     Mesh,
     PlaneBufferGeometry,
-    TextureLoader,
     AmbientLight,
     MeshLambertMaterial,
     RepeatWrapping,
 } from 'three';
 
 import { Component } from '@alt/engine/renderer';
-import { GameMap } from '@alt/game';
+import { TileTextureProvider } from '@alt/engine/renderer/tileTextureProvider';
 
 export class OverworldMapComponent extends Component {
-    // @ts-ignore
-    private map: GameMap;
+    private tileTextureProvider = this.provide(TileTextureProvider);
 
     private CHUNK_SIZE = 32;
 
     private rndrd = false;
-
-    public setMap(map: GameMap): void {
-        this.map = map;
-    }
 
     public onBind(): void { }
 
@@ -42,10 +36,11 @@ export class OverworldMapComponent extends Component {
     }
 
     private renderChunkGroups(chunk: MapChunk): void {
-        var grass = new TextureLoader().load('/library/images/grass.webp');
-        grass.wrapS = RepeatWrapping;
-        grass.wrapT = RepeatWrapping;
-        grass.repeat.set(this.CHUNK_SIZE, this.CHUNK_SIZE);
+        const { texture } = this.tileTextureProvider.getTextureAtlas(['grass']);
+
+        texture.wrapS = RepeatWrapping;
+        texture.wrapT = RepeatWrapping;
+        texture.repeat.set(Math.floor(this.CHUNK_SIZE / 6), this.CHUNK_SIZE);
 
         const geometry = new PlaneBufferGeometry(
             this.CHUNK_SIZE,
@@ -55,7 +50,7 @@ export class OverworldMapComponent extends Component {
         );
 
         const material = new MeshLambertMaterial({
-            map: grass,
+            map: texture,
         });
 
         const mesh = new Mesh(

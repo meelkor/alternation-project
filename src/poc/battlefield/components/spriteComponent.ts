@@ -3,14 +3,14 @@ import noiseModule = require('noisejs');
 
 import { Sprite } from '@alt/game/forms/sprite';
 import { Component, RenderingConfigProvider } from '@alt/engine/renderer';
-import { ResourceIndex } from '@alt/engine/resources/resourceIndex';
+import { AssetIndex } from '@alt/engine/assets/assetIndex';
 import { SpriteTexture } from '@alt/engine/renderer/spriteTexture';
 import { TilePos } from '@alt/engine/projection/tile';
 
 const Noise: any = (noiseModule as any).Noise;
 
 export abstract class SpriteComponent<S extends Sprite> extends Component {
-    protected resourceIndex = this.inject(ResourceIndex);
+    protected resourceIndex = this.inject(AssetIndex);
     protected renderingConfigProvider = this.inject(RenderingConfigProvider);
 
     protected sprite: S;
@@ -28,13 +28,13 @@ export abstract class SpriteComponent<S extends Sprite> extends Component {
     public setSprite(sprite: S): void {
         this.sprite = sprite;
 
-        if (!this.resourceIndex.getResource(this.sprite.asset)) {
+        if (!this.resourceIndex.getAssetFamily(this.sprite.asset)) {
             throw new Error(`Asset doesn't exist: ${this.sprite.asset}`);
         }
     }
 
     public onBind(): void {
-        this.spriteTexture = new SpriteTexture(this.resourceIndex.getResource(this.sprite.asset));
+        this.spriteTexture = new SpriteTexture(this.resourceIndex.getAssetFamily(this.sprite.asset)[0]);
 
         this.mesh = this.createMesh();
         this.context.scene.add(this.mesh);
@@ -89,7 +89,7 @@ export abstract class SpriteComponent<S extends Sprite> extends Component {
     }
 
     protected createLight(): SpotLight {
-        const light = new SpotLight('#ffccaa', this.sprite.light);
+        const light = new SpotLight('#df7d4f', this.sprite.light);
         light.distance = 100;
         light.angle = 0.45;
         light.penumbra = 1;

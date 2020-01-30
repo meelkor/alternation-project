@@ -31,8 +31,8 @@ export class Renderer extends Injectable {
         return this._worldScene;
     }
 
-    public bindComponent(component: Component, pane: number): void {
-        const boundComp = { pane, component };
+    public bindComponent(component: Component): void {
+        const boundComp = { component };
         this.components.push(boundComp);
         this.registerComponent(boundComp);
         component.onBind();
@@ -152,6 +152,5 @@ interface Frustum {
 }
 
 export type BoundComponent = {
-    pane: number;
     component: Component;
 };

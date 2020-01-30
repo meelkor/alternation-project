@@ -1,9 +1,15 @@
 {
-    "resources": [
+    "assets": [
         {
-            "name": "bitch",
-            "path": "./images/bitch.webp",
-            "states": ["idle"]
+            "family": "bitch",
+            "states": ["idle"],
+            "namespace": "images"
+        },
+        {
+            "family": "grass",
+            "states": ["0","1","2","3","4","5"],
+            "namespace": "images"
         }
-    ]
+    ],
+    "defaultExtension": "webp"
 }

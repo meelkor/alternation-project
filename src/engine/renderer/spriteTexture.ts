@@ -1,32 +1,27 @@
 import { UVMapping, ClampToEdgeWrapping, NearestFilter, CanvasTexture, Texture } from 'three';
 
-import { ResourceInfo } from '../resources/resourceIndex';
+import { AssetData } from '../assets/assetIndex';
 
 export class SpriteTexture {
     public readonly texture: CanvasTexture;
 
-    // @ts-ignore
     private mapWidth: number;
-    // @ts-ignore
     private mapHeight: number;
-    // @ts-ignore
-    private states: string[];
 
     public get width(): number {
-        return this.mapWidth / this.states.length;
+        return this.mapWidth;
     }
 
     public get height(): number {
         return this.mapHeight;
     }
 
-    constructor(private resInfo: ResourceInfo) {
-        this.mapWidth = resInfo.img.width;
-        this.mapHeight = resInfo.img.height;
-        this.states = resInfo.states;
+    constructor(private resInfo: AssetData) {
+        this.mapWidth = resInfo.canvas.width;
+        this.mapHeight = resInfo.canvas.height;
 
         this.texture = new CanvasTexture(
-            resInfo.img as any,
+            resInfo.canvas,
             UVMapping,
             ClampToEdgeWrapping,
             ClampToEdgeWrapping,

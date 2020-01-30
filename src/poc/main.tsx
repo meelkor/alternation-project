@@ -4,8 +4,7 @@ import { createElement } from 'jsx-dom';
 import { Injectable } from '@alt/common';
 import { RenderingConfigProvider, Renderer } from '@alt/engine/renderer';
 import { Timer } from '@alt/game/timer';
-import { ResourceIndex } from '@alt/engine/resources/resourceIndex';
-import { GameMap } from '@alt/game';
+import { AssetIndex } from '@alt/engine/assets/assetIndex';
 import { EventHandler } from '@alt/engine/events';
 import { Store } from '@alt/engine/store';
 
@@ -37,7 +36,7 @@ export class PocMain extends Injectable {
     }
 
     private createOverworld() {
-        this.provide(OverworldView).createOverworld(new GameMap([]));
+        this.provide(OverworldView).createOverworld();
     }
 
     private loop(hrt: DOMHighResTimeStamp): void {
@@ -53,7 +52,7 @@ export class PocMain extends Injectable {
             height: window.innerHeight,
             tileSize: 128,
         });
-        await this.provide(ResourceIndex).init('/library/index.json');
+        await this.provide(AssetIndex).init('/library/index.json');
 
         this.provide(Timer);
         this.renderer = this.provide(Renderer);
