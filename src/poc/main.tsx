@@ -1,5 +1,6 @@
 import { fromEvent } from 'rxjs';
 import { createElement } from 'jsx-dom';
+import assert from 'assert';
 
 import { Injectable } from '@alt/common';
 import { RenderingConfigProvider, Renderer } from '@alt/engine/renderer';
@@ -10,6 +11,9 @@ import { Store } from '@alt/engine/store';
 
 import { OverworldView } from './battlefield/overworldView';
 import { PocStore } from './pocStore';
+
+// TODO: if not production
+window.assert = assert;
 
 export class PocMain extends Injectable {
     private renderer: Renderer;

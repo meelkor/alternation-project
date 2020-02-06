@@ -4,7 +4,7 @@ import join from 'url-join';
 
 import { Injectable } from '@alt/common';
 
-import { LibraryIndex } from './libraryIndex';
+import { LibraryIndex, AssetState } from './libraryIndex';
 
 export class AssetIndex extends Injectable {
     private families = new Map<string, AssetData[]>();
@@ -21,7 +21,7 @@ export class AssetIndex extends Injectable {
                 state,
             })))),
             mergeMap(async asset => {
-                const assetFileName = `${asset.family}-${asset.state}.${asset.ext || index.defaultExtension}`;
+                const assetFileName = `${asset.family}-${asset.state.name}.${asset.ext || index.defaultExtension}`;
                 const assetUrl = join(base, asset.namespace || '', assetFileName);
 
                 const img = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -60,5 +60,5 @@ export class AssetIndex extends Injectable {
 
 export interface AssetData {
     canvas: HTMLCanvasElement;
-    state: string;
+    state: AssetState;
 }

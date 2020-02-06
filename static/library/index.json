@@ -2,13 +2,35 @@
     "assets": [
         {
             "family": "bitch",
-            "states": ["idle"],
+            "states": [{ "name": "idle" }],
+            "namespace": "images"
+        },
+        {
+            "family": "rainbow",
+            "states": [{ "name": "0" }],
             "namespace": "images"
         },
         {
             "family": "grass",
-            "states": ["0","1","2","3","4","5"],
+            "states": [
+                { "name": "0" },
+                { "name": "1" },
+                { "name": "2" },
+                { "name": "3" },
+                { "name": "4" },
+                { "name": "5" }
+            ],
             "namespace": "images"
+        },
+        {
+            "family": "dirt",
+            "states": [{ "name": "0" }],
+            "namespace": "images"
+        },
+        {
+            "family": "transition-basic",
+            "states": [{ "name": "0" }],
+            "namespace": "images/transitions"
         }
     ],
     "defaultExtension": "webp"

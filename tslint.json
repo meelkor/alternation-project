@@ -9,10 +9,6 @@
             "check-finally"
         ],
         "no-duplicate-imports": true,
-        "max-line-length": [
-            true,
-            140
-        ],
         "member-ordering": [
             true,
             {

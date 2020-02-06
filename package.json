@@ -4,8 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@types/assert": "^1.4.6",
     "@types/noisejs": "^0.0.28",
     "@types/url-join": "^4.0.0",
+    "assert": "^2.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "jsx-dom": "^6.4.0",
     "noisejs": "^2.1.0",

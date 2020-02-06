@@ -1,10 +1,12 @@
-import { WebGLRenderer, OrthographicCamera, Scene, ShaderChunk } from 'three';
+import { WebGLRenderer, OrthographicCamera, Scene } from 'three';
 import { Injectable } from '@alt/common';
 import { DEBUG } from '@alt/common/env';
 
 import { RenderingConfigProvider, RenderingConfig } from '.';
 import { Component } from './component';
 import { View } from '../view';
+import { preventLambertOverlitExtension } from './extensions/preventLambertOverlit';
+import { meshAtlasMaterialExtension } from './extensions/meshAtlasMaterial';
 
 export class Renderer extends Injectable {
     private renderingConfig = this.inject(RenderingConfigProvider);
@@ -54,6 +56,7 @@ export class Renderer extends Injectable {
     public setCanvas(canvas: HTMLCanvasElement): void {
         this.canvas = canvas;
         this.setupThree();
+        this.extendThree();
     }
 
     public render(hrt: DOMHighResTimeStamp): void {
@@ -102,8 +105,11 @@ export class Renderer extends Injectable {
         this.threeCamera.position.x = -baseOffset;
 
         this._worldScene = new Scene();
+    }
 
-        this.preventLambertOverlit();
+    private extendThree(): void {
+        preventLambertOverlitExtension();
+        meshAtlasMaterialExtension();
     }
 
     private calculateFrustum({ width, height, tileSize }: RenderingConfig): Frustum {
@@ -113,34 +119,6 @@ export class Renderer extends Injectable {
             top: height / 2 / tileSize,
             bottom: height / -2 / tileSize,
         };
-    }
-
-    private preventLambertOverlit() {
-        ShaderChunk.lights_lambert_vertex = ShaderChunk.lights_lambert_vertex.replace(
-            `#pragma unroll_loop
-	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
-		getSpotDirectLightIrradiance( spotLights[ i ], geometry, directLight );
-		dotNL = dot( geometry.normal, directLight.direction );
-		directLightColor_Diffuse = PI * directLight.color;
-		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;
-		#ifdef DOUBLE_SIDED
-			vLightBack += saturate( -dotNL ) * directLightColor_Diffuse;
-		#endif
-	}`,
-			`vec3 maxLight = vec3(0.0); vec3 currentLight = vec3(0.0);
-			#pragma unroll_loop
-	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
-		getSpotDirectLightIrradiance( spotLights[ i ], geometry, directLight );
-		dotNL = dot( geometry.normal, directLight.direction );
-		directLightColor_Diffuse = PI * directLight.color;
-
-		currentLight = saturate( dotNL ) * directLightColor_Diffuse;
-
-		if (all(lessThan(maxLight, currentLight)))
-			maxLight = currentLight;
-	}
-	vLightFront += maxLight;`,
-        );
     }
 }
 
