@@ -12,7 +12,7 @@
     "jsx-dom": "^6.4.0",
     "noisejs": "^2.1.0",
     "rxjs": "^6.5.3",
-    "three": "^0.112.1",
+    "three": "^0.125.0",
     "url-join": "^4.0.1"
   },
   "devDependencies": {
